@@ -2,6 +2,7 @@ package com.example.baitap.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
@@ -12,15 +13,20 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Full name không được để trống")
+    @Size(max = 100, message = "Full name tối đa 100 ký tự")
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
+    @Size(max = 255, message = "Address tối đa 255 ký tự")
     @Column(length = 255)
     private String address;
 
+    @Pattern(regexp = "\\d{10,20}", message = "Phone phải là số, từ 10 đến 20 chữ số")
     @Column(length = 20)
     private String phone;
 
+    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 

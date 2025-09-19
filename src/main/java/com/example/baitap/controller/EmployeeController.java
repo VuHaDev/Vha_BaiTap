@@ -1,8 +1,10 @@
 package com.example.baitap.controller;
 
 import com.example.baitap.entity.Employee;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.example.baitap.repository.EmployeeRepository;
 
@@ -18,7 +20,6 @@ public class EmployeeController {
         this.employeeRepository = employeeRepository;
     }
 
-    // Hiển thị tất cả nhân viên
     @GetMapping
     public String listEmployees(Model model) {
         List<Employee> employees = employeeRepository.findAll();
@@ -26,21 +27,21 @@ public class EmployeeController {
         return "employees/list";   // trỏ tới templates/employees/list.html
     }
 
-    // Form thêm mới
     @GetMapping("/new")
     public String createEmployeeForm(Model model) {
         model.addAttribute("employee", new Employee());
         return "employees/employee-form";  // trỏ tới templates/employees/employee-form.html
     }
 
-    // Lưu nhân viên
     @PostMapping
-    public String saveEmployee(@ModelAttribute("employee") Employee employee) {
+    public String saveEmployee(@Valid @ModelAttribute("employee") Employee employee, BindingResult result) {
+        if (result.hasErrors()) {
+            return "employees/employee-form";
+        }
         employeeRepository.save(employee);
         return "redirect:/employees";
     }
 
-    // Form sửa
     @GetMapping("/edit/{id}")
     public String editEmployeeForm(@PathVariable Integer id, Model model) {
         Employee employee = employeeRepository.findById(id)
@@ -49,7 +50,6 @@ public class EmployeeController {
         return "employees/employee-form";  // vẫn dùng form chung
     }
 
-    // Đổi trạng thái
     @GetMapping("/toggle/{id}")
     public String toggleStatus(@PathVariable Integer id) {
         Employee employee = employeeRepository.findById(id)
